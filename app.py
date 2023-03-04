@@ -5,6 +5,8 @@ from cloudscraper import CloudScraper
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
+app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
+
 scraper = CloudScraper()
 URL = "https://nekopoi.care"
 
