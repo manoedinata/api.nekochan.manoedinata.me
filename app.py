@@ -2,6 +2,7 @@ from flask import Flask
 from flask import jsonify
 
 from cloudscraper import CloudScraper
+from cloudscraper.exceptions import CloudflareChallengeError
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
@@ -10,9 +11,18 @@ app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 scraper = CloudScraper()
 URL = "https://nekopoi.care"
 
+def req_nekopoi_or_error_v2(URL):
+    try:
+        req = scraper.get(URL)
+        return req
+    except CloudflareChallengeError:
+        return jsonify({
+            "error": "IP blocked"
+        }), 400
+
 @app.route("/")
 def home():
-    req = scraper.get(URL)
+    req = req_nekopoi_or_error_v2(URL)
     parse = BeautifulSoup(req.text, "html.parser")
 
     # Latest posts
